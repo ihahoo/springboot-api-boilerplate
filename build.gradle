@@ -1,0 +1,56 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.2.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+bootJar {
+    baseName = 'springboot-api-boilerplate'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    dev
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    
+    dev("org.springframework.boot:spring-boot-devtools")
+}
+
+bootRun {
+    classpath = sourceSets.main.runtimeClasspath + configurations.dev
+}
+
+task runDockerDev(type:Exec) {
+    commandLine 'docker-compose', 'up'
+}
+
+task stopDockerDev(type:Exec) {
+    commandLine 'docker-compose', 'down'
+}
+
+task run(type:Exec) {
+    commandLine 'gradle', 'bootRun'
+}
+
+task dev(type:Exec) {
+    commandLine 'gradle', 'build', '-t'
+}
