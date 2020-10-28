@@ -1,12 +1,13 @@
-package app;
+package cn.hahoo.boilerplate;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Application {
+public class BoilerplateApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(BoilerplateApplication.class, args);
     }
+
 }

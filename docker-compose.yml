@@ -1,29 +1,17 @@
 version: '2'
 services:
-  api:
-    build:
-      context: .
-      dockerfile: docker/development/Dockerfile
-    image: api-dev
-    command: sh -c "gradle build -t & gradle bootRun"
-    ports:
-      - 8080:8080
-    volumes:
-      - .:/usr/src/myapp
-    depends_on:
-      - db
-      - redis
-  db:
-    image: postgres:9.6-alpine
-    volumes:
-      - ./data/postgresql:/var/lib/postgresql/data/pgdata
-    ports:
-      - 5432:5432
+  mysql:
+    image: mysql:8
+    container_name: mysql
     environment:
-      POSTGRES_PASSWORD: SgQ6Vhc3u015xOL09se9
-      PGDATA: /var/lib/postgresql/data/pgdata
+      MYSQL_ROOT_PASSWORD: A4EvkEnXM97TlDOqxaGXx3ojoAOJg9H0
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
   redis:
-    image: redis:4-alpine
+    image: redis:6-alpine
+    container_name: redis
     volumes:
       - ./data/config/redis.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis:/data
