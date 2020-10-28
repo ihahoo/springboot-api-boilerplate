@@ -1,6 +1,7 @@
 package cn.hahoo.boilerplate.api.user;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -11,7 +12,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @RequestMapping("/users")
+    @RequestMapping(value="/users", method = RequestMethod.GET)
     public List<User> getAll(){
         return userService.getAll();
     }
