@@ -9,4 +9,11 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     List<User> getAll();
+    User getById(Integer id);
+    User getByUsername(String username);
+    void insert(User user);
+    void update(User user);
+    void delete(Integer id);
+    void updateLastLogin(User user);
+    UserInfo getUserInfoById(Integer id);
 }

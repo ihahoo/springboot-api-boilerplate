@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hahoo.boilerplate.api.authorization.AuthorizationMapper">
+  <select id="getById" parameterType="int" resultType="cn.hahoo.boilerplate.api.authorization.Authorization">
+    SELECT a.*
+    FROM authorizations a
+        INNER JOIN users b ON a.user_id=b.id
+    WHERE a.id=#{id} AND b.is_enabled=1 AND b.is_del=0
+  </select>
+
+  <select id="getByUuid" parameterType="string" resultType="cn.hahoo.boilerplate.api.authorization.Authorization">
+    SELECT * FROM authorizations WHERE uuid=#{id}
+  </select>
+
+  <insert id="insertLog" parameterType="cn.hahoo.boilerplate.api.authorization.AuthorizationLog" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO authorizations_logs
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        log_type,
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="logTime != null">
+        log_time,
+      </if>
+      <if test="clientType != null">
+        client_type,
+      </if>
+      <if test="authId != null">
+        auth_id,
+      </if>
+      <if test="userAgent != null">
+        user_agent,
+      </if>
+      <if test="log != null">
+        log,
+      </if>
+      <if test="clientVersion != null">
+        client_version,
+      </if>
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+        #{logType},
+      <if test="userId != null">
+        #{userId},
+      </if>
+      <if test="ip != null">
+        #{ip},
+      </if>
+      <if test="logTime != null">
+        #{logTime},
+      </if>
+      <if test="clientType != null">
+        #{clientType},
+      </if>
+      <if test="authId != null">
+        #{authId},
+      </if>
+      <if test="userAgent != null">
+        #{userAgent},
+      </if>
+      <if test="log != null">
+        #{log},
+      </if>
+      <if test="clientVersion != null">
+        #{clientVersion},
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="insertBlacklist" parameterType="cn.hahoo.boilerplate.api.authorization.AuthorizationBlacklist" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO authorizations_blacklist (access_token_id, access_token_exp, user_id)
+    VALUES (#{accessTokenId}, #{accessTokenExp}, #{userId})
+  </insert>
+
+  <insert id="insertAuth" parameterType="cn.hahoo.boilerplate.api.authorization.Authorization" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO authorizations (user_id, uuid, client_type, refresh_token, create_time, access_token_id, access_token_exp, access_token_iat)
+    VALUES (#{userId}, #{uuid}, #{clientType}, #{refreshToken}, #{createTime}, #{accessTokenId}, #{accessTokenExp}, #{accessTokenIat})
+  </insert>
+
+  <update id="updateAuth" parameterType="cn.hahoo.boilerplate.api.authorization.Authorization">
+    UPDATE authorizations SET refresh_token = #{refreshToken}, last_refresh_time = #{lastRefreshTime}, access_token_id = #{accessTokenId}, access_token_exp = #{accessTokenExp},
+    access_token_iat = #{accessTokenIat}, update_time = #{updateTime} WHERE id = #{id}
+  </update>
+
+  <update id="disableAuth" parameterType="int">
+    UPDATE authorizations SET is_enabled=0, update_time=now() WHERE id=#{id}
+  </update>
+</mapper>

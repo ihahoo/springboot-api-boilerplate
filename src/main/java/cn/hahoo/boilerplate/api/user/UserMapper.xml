@@ -4,13 +4,72 @@
   <resultMap id="BaseResultMap" type="cn.hahoo.boilerplate.api.user.User" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="INTEGER" />
+    <result column="is_enabled" property="isEnabled" jdbcType="INTEGER" />
+    <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP" />
+    <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR" />
   </resultMap>
 
   <sql id="Base_Column_List" >
-    id, username
+    id, username, password, uuid, create_time, update_time, is_del, is_enabled, last_login_time, last_login_ip
   </sql>
 
   <select id="getAll" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" /> FROM users
   </select>
+
+  <select id="getById" resultMap="BaseResultMap" parameterType="int">
+    SELECT <include refid="Base_Column_List" /> FROM users WHERE id = #{id}
+  </select>
+  
+  <select id="getByUsername" resultMap="BaseResultMap" parameterType="string">
+    SELECT <include refid="Base_Column_List" /> FROM users WHERE username = #{username}
+  </select>
+
+  <select id="getUserInfoById" parameterType="int" resultType="cn.hahoo.boilerplate.api.user.UserInfo">
+    SELECT id, username, uuid, last_login_time, last_login_ip FROM users
+    WHERE id = #{id} AND is_del = 0 AND is_enabled = 1
+  </select>
+
+  <insert id="insert" parameterType="cn.hahoo.boilerplate.api.user.User" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO users (username, password, uuid, create_time, update_time, is_enabled)
+    VALUES (#{username}, #{password}, #{uuid}, #{createTime}, #{createTime}, #{isEnabled})
+  </insert>
+
+  <update id="update" parameterType="cn.hahoo.boilerplate.api.user.User">
+    UPDATE users
+    <set>
+      <if test="username != null">
+        username = #{username},
+      </if>
+      <if test="password != null">
+        password = #{password},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime},
+      </if>
+      <if test="isEnabled != null">
+        is_enabled = #{isEnabled},
+      </if>
+      <if test="lastLoginTime != null">
+        last_login_time = #{lastLoginTime},
+      </if>
+      <if test="lastLoginIp != null">
+        last_login_ip = #{lastLoginIp},
+      </if>
+    </set>
+    WHERE id=#{id}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+    UPDATE users SET is_del = 1 WHERE id=#{id}
+  </delete>
+
+  <update id="updateLastLogin" parameterType="cn.hahoo.boilerplate.api.user.User">
+    UPDATE users SET last_login_time=#{lastLoginTime}, last_login_ip=#{lastLoginIp} WHERE id=#{id}
+  </update>
 </mapper>

@@ -18,7 +18,7 @@ spring:
     database: 0
     host: 127.0.0.1
     port: 6379
-    password:
+    password: CCq2Si39hdgY6ajP5vHL
     timeout: 3000
     lettuce:
       pool:
@@ -32,3 +32,13 @@ logging:
     name: logs/app.log
   level:
     root: INFO
+
+jwt:
+  jwtKey: 7GzPg0hGmiwhBeT59vnVXjdc32S5xIttf73b7anvMvIuD2BRof7tEDc27oJtOFMN
+  aesKey: j0xidfaXX5HaQ1eC
+  access-token-expire: 7200
+  refresh-token-expire: 604800
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
