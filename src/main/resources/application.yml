@@ -42,3 +42,13 @@ jwt:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
+springdoc:
+  api-docs:
+    path: /docs/openapi
+  show-login-endpoint: false
+  swagger-ui:
+    path: /docs/api
+    configUrl: /docs/openapi/swagger-config
+    disable-swagger-default-url: true
+    url: /docs/openapi

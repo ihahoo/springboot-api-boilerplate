@@ -22,7 +22,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/authorizations",
             "/authorizations/**",
-            "/hello"
+            "/hello",
+            "/docs/**"
     };
 
     private AuthorizationFilter authorizationFilter;

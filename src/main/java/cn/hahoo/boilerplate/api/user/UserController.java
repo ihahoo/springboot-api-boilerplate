@@ -6,7 +6,16 @@ import cn.hahoo.boilerplate.exception.ApiException;
 import cn.hahoo.boilerplate.utils.ClientUtil;
 import cn.hahoo.boilerplate.utils.ValidateUtil;
 import cn.hahoo.boilerplate.utils.auth.AuthUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 
+@Tag(name = "用户", description = "已登录用户操作")
 @RestController
 public class UserController {
     @Resource
@@ -38,6 +48,25 @@ public class UserController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @Operation(summary = "获取个人资料", description = "获取个人资料", security = @SecurityRequirement(name = HttpHeaders.AUTHORIZATION))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "successful operation",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserInfo.class),
+                            examples = {
+                                    @ExampleObject(value="{" +
+                                            "\"id\": \"3fe8d31f-8d53-4be0-b0d8-2a739fde86b5\"," +
+                                            "\"username\": \"ray\"," +
+                                            "\"last_login_at\": \"2011-09-06T20:39:23Z\"," +
+                                            "\"last_login_ip\": \"192.168.0.222\"" +
+                                            "}")
+                            })
+            )
+    })
+
     @GetMapping(value="/user")
     public UserInfo getInfo(){
         AuthorizationInfo authInfo = authUtil.getAuthInfo();
@@ -48,6 +77,27 @@ public class UserController {
         }
         return userInfo;
     }
+
+    @Operation(summary = "修改个人密码", description = "修改个人密码", security = @SecurityRequirement(name = HttpHeaders.AUTHORIZATION))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "",
+            required = true,
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(value="{" +
+                                    "\"old_password\": \"3fe8d31f\"," +
+                                    "\"new_password\": \"nntr7zbjmde\"," +
+                                    "\"confirm_password\": \"confirm_password\"" +
+                                    "}")
+                    })
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "successful operation"
+            )
+    })
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value="/user/password")

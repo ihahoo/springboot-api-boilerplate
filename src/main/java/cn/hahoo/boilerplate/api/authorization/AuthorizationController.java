@@ -1,6 +1,7 @@
 package cn.hahoo.boilerplate.api.authorization;
 
 import cn.hahoo.boilerplate.api.user.User;
+import cn.hahoo.boilerplate.api.user.UserInfo;
 import cn.hahoo.boilerplate.api.user.UserService;
 import cn.hahoo.boilerplate.exception.ApiException;
 import cn.hahoo.boilerplate.utils.ClientUtil;
@@ -11,7 +12,16 @@ import cn.hahoo.boilerplate.utils.auth.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +30,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+@Tag(name = "授权", description = "用户登录")
 @RestController
 public class AuthorizationController {
 
@@ -44,6 +55,39 @@ public class AuthorizationController {
     /**
      * 创建授权
      */
+    @Operation(summary = "登录/新建授权", description = "登录/新建授权")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "",
+            required = true,
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(value="{" +
+                                    "\"username\": \"testuser\"," +
+                                    "\"password\": \"e10adc3949ba59abbe56e057f20f883e\"" +
+                                    "}")
+                    })
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "created",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserInfo.class),
+                            examples = {
+                                    @ExampleObject(value="{" +
+                                            "\"id\": \"e2b8094e-3174-4182-a8b0-99c8a4d3d165\"," +
+                                            "\"access_token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5V0xxN2VRWG9UZjhhNEFaaHh2eEhnPT0iLCJpYXQiOiIxNDgwNjk3MzgyIiwiZXhwIjoiMTQ4MDcwNDU4MiIsImp0aSI6ImQwZWU3YjBlLTFhYWQtNGM5MS05ZTlkLWUzNGY5NjQzYTk0NyIsInNjb3BlcyI6WyJST0xFX01FTUJFUiJdfQ.S4myHmBzl0wljqdZc9yWmlAbuW44MX6XrhB7b934rw\"," +
+                                            "\"expires_in\": 7200," +
+                                            "\"refresh_token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5V0xxN2VRWG9UZjhhNEFaaHh2eEhnPT0iLCJpYXQiOiIxNDgwNjk3MzgyIiwianRpIjoiZThjY2VlNmMtMWZjZS00MGMwLThhNWUtOGQ0NzM1MDJiYjRiIiwic2NvcGVzIjpbIlJPTEVfUkVGUkVTSF9UT0tFTiJdfQ.UPsGhIYwo7riyPtV6GYHVRFLsENHX4OmTo0LaD0F0h82M9VrN5v3QDfGxTi1ZbfS6M8dnJaRQD2i2u3A\"," +
+                                            "\"updated_at\": \"2011-09-06T20:39:23Z\"," +
+                                            "\"created_at\": \"2011-09-06T20:39:23Z\"" +
+                                            "}")
+                            })
+            )
+    })
+
     @PostMapping("/authorizations")
     public Map<String, Object> createAuth(@RequestBody Map<String, Object> body, HttpServletRequest request) {
         ValidateUtil.required(body.get("username"), "用户名");
@@ -98,6 +142,27 @@ public class AuthorizationController {
     /**
      * 刷新授权
      */
+    @Operation(summary = "刷新授权", description = "刷新授权", security = @SecurityRequirement(name = HttpHeaders.AUTHORIZATION))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "successful operation",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserInfo.class),
+                            examples = {
+                                    @ExampleObject(value="{" +
+                                            "\"id\": \"e2b8094e-3174-4182-a8b0-99c8a4d3d165\"," +
+                                            "\"access_token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5V0xxN2VRWG9UZjhhNEFaaHh2eEhnPT0iLCJpYXQiOiIxNDgwNjk3MzgyIiwiZXhwIjoiMTQ4MDcwNDU4MiIsImp0aSI6ImQwZWU3YjBlLTFhYWQtNGM5MS05ZTlkLWUzNGY5NjQzYTk0NyIsInNjb3BlcyI6WyJST0xFX01FTUJFUiJdfQ.S4myHmBzl0wljqdZc9yWmlAbuW44MX6XrhB7b934rw\"," +
+                                            "\"expires_in\": 7200," +
+                                            "\"refresh_token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5V0xxN2VRWG9UZjhhNEFaaHh2eEhnPT0iLCJpYXQiOiIxNDgwNjk3MzgyIiwianRpIjoiZThjY2VlNmMtMWZjZS00MGMwLThhNWUtOGQ0NzM1MDJiYjRiIiwic2NvcGVzIjpbIlJPTEVfUkVGUkVTSF9UT0tFTiJdfQ.UPsGhIYwo7riyPtV6GYHVRFLsENHX4OmTo0LaD0F0h82M9VrN5v3QDfGxTi1ZbfS6M8dnJaRQD2i2u3A\"," +
+                                            "\"updated_at\": \"2011-09-06T20:39:23Z\"," +
+                                            "\"created_at\": \"2011-09-06T20:39:23Z\"" +
+                                            "}")
+                            })
+            )
+    })
+
     @PutMapping("/authorizations/{id}")
     public Map<String, Object> refreshAuth(@PathVariable(name = "id") String id, HttpServletRequest request) {
         ValidateUtil.uuid(id, "授权id", true);
@@ -197,6 +262,14 @@ public class AuthorizationController {
     /**
      * 删除授权
      */
+    @Operation(summary = "注销/删除授权", description = "注销/删除授权", security = @SecurityRequirement(name = HttpHeaders.AUTHORIZATION))
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "successful operation"
+            )
+    })
+
     @DeleteMapping("/authorizations/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteAuth(@PathVariable(name = "id") String id, HttpServletRequest request) {
