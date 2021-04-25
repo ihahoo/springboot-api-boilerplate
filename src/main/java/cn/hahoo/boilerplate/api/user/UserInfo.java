@@ -1,13 +1,26 @@
 package cn.hahoo.boilerplate.api.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@JsonPropertyOrder({ "id", "username", "last_login_at", "lastLoginIp" })
 public class UserInfo implements Serializable {
+
+    @JsonIgnore
     private Integer id;
+
     private String username;
+
+    @JsonProperty("id")
     private String uuid;
+
+    @JsonProperty("last_login_at")
     private Date lastLoginTime;
+
     private String lastLoginIp;
 
     public Integer getId() {
