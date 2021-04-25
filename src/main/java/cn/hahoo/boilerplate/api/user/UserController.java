@@ -42,7 +42,11 @@ public class UserController {
     public UserInfo getInfo(){
         AuthorizationInfo authInfo = authUtil.getAuthInfo();
 
-        return userService.getUserInfoById(authInfo.getId());
+        UserInfo userInfo = userService.getUserInfoById(authInfo.getId());
+        if (userInfo == null) {
+            throw new ApiException(400007, "无法获得用户信息", 422);
+        }
+        return userInfo;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
